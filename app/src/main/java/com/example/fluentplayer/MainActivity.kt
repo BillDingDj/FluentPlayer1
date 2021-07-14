@@ -9,12 +9,16 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import com.example.fluentplayer.databinding.ActivityMainBinding
+import com.example.fluentplayer.model.MediaItemCollectViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    private val viewModel: MediaItemCollectViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +36,15 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
+
+        onLiveDataObserved()
+        viewModel.prepareVideoMediaItems()
+    }
+
+    private fun onLiveDataObserved() {
+        viewModel.mldMediaItemsVideo.observe(this, {
+
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
