@@ -1,6 +1,7 @@
 package com.example.fluentplayer
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -12,11 +13,18 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import com.example.fluentplayer.databinding.ActivityMainBinding
 import com.example.fluentplayer.model.MediaItemCollectViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    companion object {
+        const val TAG = "MainActivity"
+    }
 
     private val viewModel: MediaItemCollectViewModel by viewModels()
 
@@ -38,12 +46,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         onLiveDataObserved()
-        viewModel.prepareVideoMediaItems()
+
+        val uiScope = CoroutineScope(Dispatchers.Main)
+        uiScope.launch {
+            viewModel.prepareVideoMediaItems()
+        }
     }
 
     private fun onLiveDataObserved() {
-        viewModel.mldMediaItemsVideo.observe(this, {
-
+        viewModel.mldMediaItemsVideos.observe(this, {
+            Log.d(TAG, "Receive ${it.size} videoItems")
         })
     }
 
