@@ -12,6 +12,10 @@ import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
 
+/**
+ * 收集本地媒体文件的ViewModel
+ * https://developer.android.com/training/data-storage/shared/media?hl=zh-cn
+ */
 class MediaItemCollectViewModel(application: Application) : AndroidViewModel(application) {
 
     private val contentResolver =
