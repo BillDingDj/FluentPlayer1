@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         onLiveDataObserved()
 
         val uiScope = CoroutineScope(Dispatchers.Main)
+
         uiScope.launch {
             viewModel.prepareVideoMediaItems()
         }

@@ -2,83 +2,82 @@ package com.example.fluentplayer.model
 
 import android.app.Application
 import android.content.ContentUris
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.example.fluentplayer.utils.ContentResolverUtils.getString
-import com.google.android.exoplayer2.MediaItem
+import com.example.fluentplayer.entity.Video
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
+import java.util.concurrent.TimeUnit
 
 class MediaItemCollectViewModel(application: Application) : AndroidViewModel(application) {
 
-    companion object{
-        private val VIDEO_PROJECTION = arrayOf(// 查询图片需要的数据列
-            MediaStore.Video.VideoColumns.DISPLAY_NAME,
-            MediaStore.Video.VideoColumns.SIZE,
-            MediaStore.Video.VideoColumns.WIDTH,
-            MediaStore.Video.VideoColumns.HEIGHT,
-            MediaStore.Video.VideoColumns.MIME_TYPE,
-            MediaStore.Video.VideoColumns.DURATION,
-            MediaStore.Video.VideoColumns.ARTIST,
-            MediaStore.Video.VideoColumns.DATE_ADDED,
-            MediaStore.Files.FileColumns._ID
-        )
+    private val contentResolver =
+        WeakReference(application.applicationContext).get()?.contentResolver
 
-        private const val ALL_VIDEO_SELECTION = "bucket_id != ? AND " + MediaStore.Video.Media.MIME_TYPE + " like ?"
-    }
-
-    private val contextRef = WeakReference(application.applicationContext)
-
-    val mldMediaItemsVideos = MutableLiveData<ArrayList<MediaItem>>()
+    val mldMediaItemsVideos = MutableLiveData<ArrayList<Video>>()
 
     /**
      * 协程，异步操作准备MediaItems
      */
     suspend fun prepareVideoMediaItems() {
         withContext(Dispatchers.IO) {
-            val queryUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            val resolver = contextRef.get()?.contentResolver ?: return@withContext
-
-            val cursor = resolver.query(
-                queryUri,
-                VIDEO_PROJECTION,
-                ALL_VIDEO_SELECTION,
-                arrayOf(
-                    "video%"
-                ),
-                MediaStore.Files.FileColumns.DATE_ADDED + " desc"
+            val projection = arrayOf(
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.DISPLAY_NAME,
+                MediaStore.Video.Media.DURATION,
+                MediaStore.Video.Media.SIZE
             )
 
-            val videosList = ArrayList<MediaItem>()
-            cursor?.use { data ->
-                while (data.moveToNext()) {
-//                    val name = getString(data, MediaStore.Video.VideoColumns.DISPLAY_NAME)
-                    val id = getString(data, MediaStore.Files.FileColumns._ID)
-                    val uri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id.toLong())
+            val selection = "${MediaStore.Video.Media.DURATION} >= ?"
 
-                    val mimeType = getString(data, MediaStore.Video.VideoColumns.MIME_TYPE)
+            // 视频时间限制
+            val selectionArgs = arrayOf(
+                TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS).toString()
+            )
 
-//                    val size = getLong(data, MediaStore.Video.VideoColumns.SIZE)
-//                    val width = getInt(data, MediaStore.Video.VideoColumns.WIDTH)
-//                    val height = getInt(data, MediaStore.Video.VideoColumns.HEIGHT)
-//                    val addTime = getLong(data, MediaStore.Video.VideoColumns.DATE_ADDED)
-//                    val duration = getLong(data, MediaStore.Video.VideoColumns.DURATION)
-//                    val artist = getString(data, MediaStore.Video.VideoColumns.ARTIST)
+            val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
 
-                    // 封装实体
-                    val videoItemBuilder = MediaItem.Builder()
-                    videoItemBuilder.setUri(uri)
-                    videoItemBuilder.setMimeType(mimeType)
-                    videoItemBuilder.setMediaId(id)
+            val query = contentResolver?.query(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                sortOrder
+            )
 
-                    val item = videoItemBuilder.build()
-                    videosList.add(item)
+            val videosList = ArrayList<Video>()
+            query?.use { cursor ->
+                // Cache column indices.
+                val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
+                val nameColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
+                val durationColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
+                val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
+
+                while (cursor.moveToNext()) {
+                    // Get values of columns for a given video.
+                    val id = cursor.getLong(idColumn)
+                    val name = cursor.getString(nameColumn)
+                    val duration = cursor.getInt(durationColumn)
+                    val size = cursor.getInt(sizeColumn)
+
+                    val contentUri: Uri = ContentUris.withAppendedId(
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                        id
+                    )
+
+                    // Stores column values and the contentUri in a local object
+                    // stat represents the media file.
+                    videosList.add(
+                        Video(contentUri, name, duration, size)
+                    )
                 }
             }
             mldMediaItemsVideos.postValue(videosList)
         }
     }
-
 }
