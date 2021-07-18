@@ -3,18 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/SplashFragment">
+    <fragment
+        android:id="@+id/MediaDisplayFragment"
+        android:name="com.example.fluentplayer.MediaDisplayFragment"
+        android:label="@string/display_fragment_label"
+        tools:layout="@layout/fragment_media_display">
+
+    </fragment>
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/SplashFragment"
         android:name="com.example.fluentplayer.SplashFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_first">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            android:id="@+id/action_SplashFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+
+        <action
+            android:id="@+id/action_SplashFragment_to_MediaDisplayFragment"
+            app:destination="@id/MediaDisplayFragment"/>
     </fragment>
+
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.example.fluentplayer.PlayerFragment"
@@ -22,7 +34,7 @@
         tools:layout="@layout/fragment_second">
 
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_SecondFragment_to_SplashFragment"
+            app:destination="@id/SplashFragment" />
     </fragment>
 </navigation>
