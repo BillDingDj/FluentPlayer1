@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.fluentplayer.entity.Video
@@ -32,7 +33,8 @@ class MediaItemCollectViewModel(application: Application) : AndroidViewModel(app
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Media.DISPLAY_NAME,
                 MediaStore.Video.Media.DURATION,
-                MediaStore.Video.Media.SIZE
+                MediaStore.Video.Media.SIZE,
+                MediaStore.Video.Media.MIME_TYPE
             )
 
             val selection = "${MediaStore.Video.Media.DURATION} >= ?"
@@ -68,7 +70,9 @@ class MediaItemCollectViewModel(application: Application) : AndroidViewModel(app
                     val name = cursor.getString(nameColumn)
                     val duration = cursor.getInt(durationColumn)
                     val size = cursor.getInt(sizeColumn)
+                    val mimeType =cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE))
 
+                    Log.d("MediaItemCollectViewModel", "mimeType: $mimeType")
                     val contentUri: Uri = ContentUris.withAppendedId(
                         MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                         id
@@ -77,7 +81,7 @@ class MediaItemCollectViewModel(application: Application) : AndroidViewModel(app
                     // Stores column values and the contentUri in a local object
                     // stat represents the media file.
                     videosList.add(
-                        Video(contentUri, name, duration, size)
+                        Video(contentUri, name, duration, size, mimeType)
                     )
                 }
             }
