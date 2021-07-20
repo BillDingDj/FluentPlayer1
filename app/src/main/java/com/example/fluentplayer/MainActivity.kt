@@ -15,6 +15,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.example.fluentplayer.databinding.ActivityMainBinding
 import com.example.fluentplayer.model.MediaItemCollectViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -90,6 +91,10 @@ class MainActivity : AppCompatActivity() {
     private fun onLiveDataObserved() {
         viewModel.mldMediaItemsVideos.observe(this, {
             Log.d(TAG, "Receive ${it.size} videoItems")
+            val bundle = Bundle().apply {
+                putParcelableArrayList(MediaDisplayFragment.BUNDLE_MEDIA_ITEMS, it)
+            }
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_SplashFragment_to_MediaDisplayFragment, bundle)
         })
     }
 

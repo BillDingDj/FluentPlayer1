@@ -1,5 +1,6 @@
 package com.example.fluentplayer.model
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContentUris
 import android.net.Uri
@@ -27,6 +28,7 @@ class MediaItemCollectViewModel(application: Application) : AndroidViewModel(app
     /**
      * 协程，异步操作准备MediaItems
      */
+    @SuppressLint("LongLogTag")
     suspend fun prepareVideoMediaItems() {
         withContext(Dispatchers.IO) {
             val projection = arrayOf(

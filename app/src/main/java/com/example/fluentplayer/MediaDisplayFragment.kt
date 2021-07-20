@@ -49,7 +49,7 @@ class MediaDisplayFragment : Fragment() {
         mRecyclerView.apply {
             adapter = mAdapter
             layoutManager = GridLayoutManager(context!!, 3)
-            mAdapter?.
+            mAdapter.setDataSource(mMediaList)
         }
     }
 
