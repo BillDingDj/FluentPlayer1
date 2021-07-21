@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fluentplayer.entity.Video
 import com.example.fluentplayer.views.VideoItemView
 
-class MediaItemAdapter : RecyclerView.Adapter<MediaItemAdapter.MediaItemViewHolder>() {
+class MediaItemAdapter(
+    val callback: (videoUri: Uri) -> Unit
+) : RecyclerView.Adapter<MediaItemAdapter.MediaItemViewHolder>() {
     private val mDataSource = ArrayList<Video>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemViewHolder {
@@ -31,8 +33,18 @@ class MediaItemAdapter : RecyclerView.Adapter<MediaItemAdapter.MediaItemViewHold
     }
 
     inner class MediaItemViewHolder(private val view: VideoItemView) : RecyclerView.ViewHolder(view) {
+        var mCurrentUri: Uri? = null
+        init {
+            view.setOnClickListener {
+                mCurrentUri?.let {
+                    callback(it)
+                }
+            }
+        }
         fun setUri(uri: Uri?) {
+            mCurrentUri = uri
             if (uri == null) return
+
             view.setUri(uri)
         }
     }

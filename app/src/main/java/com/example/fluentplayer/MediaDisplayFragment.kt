@@ -1,20 +1,27 @@
 package com.example.fluentplayer
 
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.fluentplayer.PlayerFragment.Companion.PARA_URI
 import com.example.fluentplayer.databinding.FragmentMediaDisplayBinding
 import com.example.fluentplayer.entity.Video
+import com.example.fluentplayer.utils.dp2px
 
 class MediaDisplayFragment : Fragment() {
     companion object{
         const val BUNDLE_MEDIA_ITEMS = "media_items"
+    }
+
+    private val mCallback: (videoUri: Uri) -> Unit = {
+        handleVideoClick(it)
     }
 
     private var _binding: FragmentMediaDisplayBinding? = null
@@ -47,10 +54,10 @@ class MediaDisplayFragment : Fragment() {
 
     private fun initRecyclerView(rootView: View) {
         mRecyclerView = rootView.findViewById(R.id.media_item_display_fragment)
-        mAdapter = MediaItemAdapter()
+        mAdapter = MediaItemAdapter(mCallback)
         mRecyclerView.apply {
             adapter = mAdapter
-            layoutManager = GridLayoutManager(context!!, 3)
+            layoutManager = GridLayoutManager(requireContext(), 3)
             mAdapter.setDataSource(mMediaList)
             addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(
@@ -59,8 +66,8 @@ class MediaDisplayFragment : Fragment() {
                     parent: RecyclerView,
                     state: RecyclerView.State
                 ) {
-                    outRect.bottom = 20
-                    outRect.right = 20
+                    outRect.bottom = 5.dp2px(context)
+                    outRect.right = 5.dp2px(context)
                 }
             })
         }
@@ -68,5 +75,12 @@ class MediaDisplayFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+    }
+
+    private fun handleVideoClick(uri: Uri) {
+        val bundle = Bundle().apply {
+            putParcelable(PARA_URI, uri)
+        }
+        findNavController().navigate(R.id.action_MediaDisplayFragment_to_PlayerFragment, bundle)
     }
 }

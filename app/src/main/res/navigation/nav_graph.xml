@@ -9,7 +9,9 @@
         android:name="com.example.fluentplayer.MediaDisplayFragment"
         android:label="@string/display_fragment_label"
         tools:layout="@layout/fragment_media_display">
-
+        <action
+            android:id="@+id/action_MediaDisplayFragment_to_PlayerFragment"
+            app:destination="@id/SecondFragment" />
     </fragment>
 
     <fragment
@@ -31,7 +33,7 @@
         android:id="@+id/SecondFragment"
         android:name="com.example.fluentplayer.PlayerFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        tools:layout="@layout/fragment_player">
 
         <action
             android:id="@+id/action_SecondFragment_to_SplashFragment"
