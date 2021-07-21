@@ -1,5 +1,6 @@
 package com.example.fluentplayer
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.fluentplayer.databinding.FragmentMediaDisplayBinding
 import com.example.fluentplayer.entity.Video
 
@@ -50,6 +52,17 @@ class MediaDisplayFragment : Fragment() {
             adapter = mAdapter
             layoutManager = GridLayoutManager(context!!, 3)
             mAdapter.setDataSource(mMediaList)
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    outRect.bottom = 20
+                    outRect.right = 20
+                }
+            })
         }
     }
 
