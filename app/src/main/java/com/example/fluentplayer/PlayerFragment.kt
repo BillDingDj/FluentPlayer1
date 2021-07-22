@@ -26,7 +26,7 @@ class PlayerFragment : Fragment() {
     private lateinit var mUri: Uri
 
     /**
-     * ExoPlayer
+     * Exo Player
      */
     private lateinit var mPlayer : SimpleExoPlayer
 
@@ -63,5 +63,6 @@ class PlayerFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        mPlayer.stop()
     }
 }

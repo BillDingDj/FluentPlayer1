@@ -16,7 +16,7 @@ import com.example.fluentplayer.entity.Video
 import com.example.fluentplayer.utils.dp2px
 
 class MediaDisplayFragment : Fragment() {
-    companion object{
+    companion object {
         const val BUNDLE_MEDIA_ITEMS = "media_items"
     }
 
@@ -34,7 +34,8 @@ class MediaDisplayFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val bundle = arguments
-        val videoList = bundle?.getParcelableArrayList<Video>(BUNDLE_MEDIA_ITEMS)?.toList() ?: emptyList()
+        val videoList =
+            bundle?.getParcelableArrayList<Video>(BUNDLE_MEDIA_ITEMS)?.toList() ?: emptyList()
         mMediaList.addAll(videoList)
     }
 
@@ -67,7 +68,9 @@ class MediaDisplayFragment : Fragment() {
                     state: RecyclerView.State
                 ) {
                     outRect.bottom = 5.dp2px(context)
-                    outRect.right = 5.dp2px(context)
+                    if (parent.getChildAdapterPosition(view) % 3 != 2) {
+                        outRect.right = 5.dp2px(context)
+                    }
                 }
             })
         }
