@@ -33,7 +33,7 @@ class VideoItemView @JvmOverloads constructor(
         mImageView?.let {
             Glide.with(context)
                 .load(uri)
-                .fitCenter()
+                .centerCrop()
                 .into(it)
         }
     }

@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.fluentplayer.databinding.ActivityMainBinding
 import com.example.fluentplayer.model.MediaItemCollectViewModel
 import com.example.fluentplayer.utils.DeviceUtils
+import com.example.fluentplayer.utils.JniUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,6 +90,9 @@ class MainActivity : AppCompatActivity() {
     private fun onLiveDataObserved() {
         viewModel.mldMediaItemsVideos.observe(this, {
             Log.d(TAG, "Receive ${it.size} videoItems")
+            val jniHint = JniUtils.GetFFmpegVersion()
+            Log.d(TAG, "$jniHint")
+            Toast.makeText(this, jniHint, Toast.LENGTH_LONG)
             val bundle = Bundle().apply {
                 putParcelableArrayList(MediaDisplayFragment.BUNDLE_MEDIA_ITEMS, it)
             }
